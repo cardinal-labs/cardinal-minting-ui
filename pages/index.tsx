@@ -39,17 +39,17 @@ function Home() {
       <div className="z-10 mx-auto mt-48 flex grow flex-col gap-24 px-8 md:px-16">
         <div className="flex w-full flex-col text-center">
           <div className="mb-2 text-3xl text-light-0">Step 1</div>
-          <div className="text-lg text-medium-3">Start your mint</div>
+          <div className="text-lg text-medium-3">Setup your mint</div>
           <div className="mb-4 text-base italic text-medium-3">
-            Coming soon...
+            {/* Coming soon... */}
           </div>
         </div>
         <div className="mx-auto h-48 w-[2px] bg-border"></div>
         <div className="flex w-full flex-col text-center">
           <div className="mb-2 text-3xl text-light-0">Step 2</div>
-          <div className="text-lg text-medium-3">Add your paramaters</div>
+          <div className="text-lg text-medium-3">Configure your paramaters</div>
           <div className="mb-4 text-base italic text-medium-3">
-            Coming soon...
+            {/* Coming soon... */}
           </div>
         </div>
         <div className="mx-auto h-48 w-[2px] bg-border"></div>
@@ -57,7 +57,7 @@ function Home() {
           <div className="mb-2 text-3xl text-light-0">Step 3</div>
           <div className="text-lg text-medium-3">Share your page</div>
           <div className="mb-4 text-base italic text-medium-3">
-            Coming soon...
+            {/* Coming soon... */}
           </div>
         </div>
         <div className="mx-auto h-48 w-[2px] bg-border"></div>
