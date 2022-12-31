@@ -65,7 +65,6 @@ export const useHandleMint = () => {
           from: ethWalletId,
           data: contract.methods.mintNFT(ethWalletId).encodeABI(),
         }
-        console.log('ethWalletId', ethWalletId)
         const windowTyped = window as any
         const txHash = await windowTyped.ethereum.request({
           method: 'eth_sendTransaction',
@@ -293,7 +292,7 @@ export const useHandleMint = () => {
       },
       onSuccess: (txid) => {
         notify({
-          message: `Succesfully minted 1 token`,
+          message: `View the status of your minted token here`,
           ethNetwork: ETH_NETWORKS.includes(environment.label)
             ? environment.label
             : '',
