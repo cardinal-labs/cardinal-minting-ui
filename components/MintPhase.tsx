@@ -8,11 +8,13 @@ import { PublicKey } from '@solana/web3.js'
 import { Tooltip } from 'common/Tooltip'
 import type { Phase } from 'config/config'
 import { useCandyMachineData } from 'hooks/useCandyMachineData'
+import { useCandyMachineId } from 'hooks/useCandyMachineId'
 import {
   mintDecimals,
   mintSymbol,
   WRAPPED_SOL_MINT,
 } from 'hooks/usePaymentMints'
+import { ETH_NETWORKS } from 'providers/EnvironmentProvider'
 import { useProjectConfig } from 'providers/ProjectConfigProvider'
 import { useUTCNow } from 'providers/UTCNowProvider'
 import { AiFillCrown } from 'react-icons/ai'
@@ -23,6 +25,7 @@ import { WhitelistTokenStatus } from './WhitelistTokenStatus'
 export const MintPhase = ({ phase }: { phase: Phase }) => {
   const { UTCNow } = useUTCNow()
   const { config } = useProjectConfig()
+  const candyMachineId = useCandyMachineId()
   const candyMachineData = useCandyMachineData()
 
   const goLiveSeconds =
@@ -49,14 +52,16 @@ export const MintPhase = ({ phase }: { phase: Phase }) => {
     tryPublicKey(phase.payment?.paymentMint) ?? candyMachineData.data?.tokenMint
 
   const live =
-    UTCNow > (goLiveSeconds ?? 0) &&
-    (endSeconds === 0 || UTCNow < (endSeconds ?? 0)) &&
-    (!phase.payment?.paymentMint ||
-      phase.payment?.paymentMint ===
-        candyMachineData.data?.tokenMint?.toString()) &&
-    (!phase.payment?.paymentAmount ||
-      (phase.payment?.paymentAmount ?? 0) ===
-        parseInt(candyMachineData.data?.data.price.toString() ?? '0'))
+    (candyMachineId.data?.chain &&
+      ETH_NETWORKS.includes(candyMachineId.data?.chain)) ||
+    (UTCNow > (goLiveSeconds ?? 0) &&
+      (endSeconds === 0 || UTCNow < (endSeconds ?? 0)) &&
+      (!phase.payment?.paymentMint ||
+        phase.payment?.paymentMint ===
+          candyMachineData.data?.tokenMint?.toString()) &&
+      (!phase.payment?.paymentAmount ||
+        (phase.payment?.paymentAmount ?? 0) ===
+          parseInt(candyMachineData.data?.data.price.toString() ?? '0')))
 
   return (
     <div
@@ -69,38 +74,43 @@ export const MintPhase = ({ phase }: { phase: Phase }) => {
           <div className="text-base font-bold">{phase.title}</div>
           <div className="text-light-2">{phase.subtitle}</div>
         </div>
-        <div className="flex flex-col items-end">
-          <div className="text-base font-bold">
-            {endSeconds && UTCNow > endSeconds ? (
-              <div className="text-red-500">Ended</div>
-            ) : goLiveSeconds && UTCNow > goLiveSeconds ? (
-              <div className="flex items-center gap-2">
-                <div className="text-green-500">
-                  {endSeconds ? (
-                    <div>
-                      {getExpirationString(endSeconds, UTCNow, {
-                        showZeros: true,
-                        capitalizeSuffix: false,
-                      })}
-                    </div>
-                  ) : (
-                    'LIVE'
-                  )}
+        {!(
+          candyMachineId.data?.chain &&
+          ETH_NETWORKS.includes(candyMachineId.data?.chain)
+        ) && (
+          <div className="flex flex-col items-end">
+            <div className="text-base font-bold">
+              {endSeconds && UTCNow > endSeconds ? (
+                <div className="text-red-500">Ended</div>
+              ) : goLiveSeconds && UTCNow > goLiveSeconds ? (
+                <div className="flex items-center gap-2">
+                  <div className="text-green-500">
+                    {endSeconds ? (
+                      <div>
+                        {getExpirationString(endSeconds, UTCNow, {
+                          showZeros: true,
+                          capitalizeSuffix: false,
+                        })}
+                      </div>
+                    ) : (
+                      'LIVE'
+                    )}
+                  </div>
                 </div>
-              </div>
-            ) : goLiveSeconds ? (
-              getExpirationString(goLiveSeconds, UTCNow, {
-                showZeros: true,
-                capitalizeSuffix: false,
-              })
-            ) : endSeconds === 0 ? (
-              <div></div>
-            ) : (
-              <div className="h-[26px] w-16 animate-pulse rounded-lg bg-border" />
-            )}
+              ) : goLiveSeconds ? (
+                getExpirationString(goLiveSeconds, UTCNow, {
+                  showZeros: true,
+                  capitalizeSuffix: false,
+                })
+              ) : endSeconds === 0 ? (
+                <div></div>
+              ) : (
+                <div className="h-[26px] w-16 animate-pulse rounded-lg bg-border" />
+              )}
+            </div>
+            <div className="text-light-2">{phase.description}</div>
           </div>
-          <div className="text-light-2">{phase.description}</div>
-        </div>
+        )}
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
@@ -124,7 +134,10 @@ export const MintPhase = ({ phase }: { phase: Phase }) => {
             new BN(paymentAmount ?? 0),
             mintDecimals(paymentMint ?? new PublicKey(WRAPPED_SOL_MINT))
           ).toFixed(2)}{' '}
-          {mintSymbol(paymentMint ?? new PublicKey(WRAPPED_SOL_MINT))}
+          {candyMachineId.data?.chain &&
+          ETH_NETWORKS.includes(candyMachineId.data?.chain)
+            ? 'ETH'
+            : mintSymbol(paymentMint ?? new PublicKey(WRAPPED_SOL_MINT))}
         </div>
       </div>
     </div>

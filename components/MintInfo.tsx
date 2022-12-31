@@ -5,8 +5,8 @@ import { useProjectConfig } from 'providers/ProjectConfigProvider'
 export const MintInfo = () => {
   const { config } = useProjectConfig()
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-6">
+    <div className="flex w-full flex-col gap-6">
+      <div className="flex gap-6">
         {config.logoImage && (
           <img
             className="w-10"

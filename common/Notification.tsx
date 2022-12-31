@@ -6,6 +6,7 @@ import { VscClose } from 'react-icons/vsc'
 
 interface INotifyArgs {
   message?: string
+  ethNetwork?: string
   description?: React.ReactNode
   txid?: string
   txids?: string[]
@@ -15,6 +16,7 @@ interface INotifyArgs {
 
 export function notify({
   message,
+  ethNetwork,
   description,
   txid,
   txids,
@@ -38,9 +40,15 @@ export function notify({
       <div>
         View Transaction:{' '}
         <a
-          href={`https://explorer.solana.com/tx/${txid}?cluster=${
-            cluster?.toString() ?? ''
-          }`}
+          href={
+            ethNetwork === 'eth-mainnet'
+              ? `https://etherscan.io/tx/${txid}`
+              : ethNetwork === 'eth-goerli'
+              ? `https://goerli.etherscan.io/tx/${txid}`
+              : `https://explorer.solana.com/tx/${txid}?cluster=${
+                  cluster?.toString() ?? ''
+                }`
+          }
           target="_blank"
           rel="noopener noreferrer"
         >
