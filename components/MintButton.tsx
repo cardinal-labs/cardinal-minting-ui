@@ -2,6 +2,8 @@ import { Button } from 'common/Button'
 import { Tooltip } from 'common/Tooltip'
 import { useHandleMint } from 'handlers/useHandleMint'
 import { useCandyMachineData } from 'hooks/useCandyMachineData'
+import { useEthCandyMachineData } from 'hooks/useEthCandyMachineData'
+import { useEthWalletId } from 'hooks/useEthWalletId'
 import { isValid, useGatewayToken } from 'hooks/useGatewayToken'
 import { useWalletId } from 'hooks/useWalletId'
 import { useWhitelistTokenAccount } from 'hooks/useWhitelistTokenAccount'
@@ -13,6 +15,8 @@ export const MintButton = () => {
   const { config } = useProjectConfig()
 
   const walletId = useWalletId()
+  const ethWalletId = useEthWalletId()
+  const ethCandyMachineData = useEthCandyMachineData()
   const candyMachineData = useCandyMachineData()
   const gatewayToken = useGatewayToken(
     candyMachineData.data?.data.gatekeeper?.gatekeeperNetwork
@@ -32,15 +36,20 @@ export const MintButton = () => {
           parseInt(candyMachineData.data?.data.price.toString() ?? '0'))
   )
   const disabled =
-    !activePhase ||
-    !candyMachineData.data ||
-    candyMachineData.data.itemsRedeemed.toString() ===
-      candyMachineData.data.data.maxSupply.toString() ||
-    !walletId ||
-    (!!candyMachineData.data?.data.gatekeeper && !isValid(gatewayToken.data)) ||
-    (!!candyMachineData.data?.data.whitelistMintSettings &&
-      (whitelistTokenAccount.data?.amount.toNumber() ?? 0) <= 0) ||
-    (!!config.goLiveSeconds && UTCNow < (config.goLiveSeconds ?? 0))
+    (!ethCandyMachineData.data ||
+      ethCandyMachineData.data.minted.toString() ===
+        ethCandyMachineData.data.supply.toString() ||
+      !ethWalletId) &&
+    (!candyMachineData.data ||
+      candyMachineData.data.itemsRedeemed.toString() ===
+        candyMachineData.data.data.maxSupply.toString() ||
+      !walletId ||
+      !activePhase ||
+      (!!candyMachineData.data?.data.gatekeeper &&
+        !isValid(gatewayToken.data)) ||
+      (!!candyMachineData.data?.data.whitelistMintSettings &&
+        (whitelistTokenAccount.data?.amount.toNumber() ?? 0) <= 0) ||
+      (!!config.goLiveSeconds && UTCNow < (config.goLiveSeconds ?? 0)))
   return (
     <Tooltip
       className="w-full cursor-pointer"

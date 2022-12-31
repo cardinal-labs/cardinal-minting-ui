@@ -34,6 +34,10 @@ export type Phase = {
 }
 
 export type ProjectConfig = {
+  eth?: {
+    contractAddress: string
+    goerli: boolean
+  }
   hidden?: boolean
   indexMetadataDisabled?: boolean
   name: string
@@ -298,5 +302,29 @@ export const projectConfigs: { [key: string]: ProjectConfig } = {
       glow: '#278ace',
     },
     candyMachineId: '',
+  },
+  ['degods']: {
+    name: 'ETH Degods',
+    eth: {
+      contractAddress: '0x0A8111CdD30F1E363337F06222037B94f327da18',
+      goerli: true,
+    },
+    displayName: 'Degods brought to you by Giannis on ETH',
+    description: 'beep boop boopity boop',
+    websiteUrl: 'https://cardinal.so',
+    socialLinks: [
+      {
+        icon: 'web',
+        link: 'https://cardinal.so/',
+      },
+      {
+        icon: 'twitter',
+        link: 'https://twitter.com/cardinal_labs',
+      },
+    ],
+    colors: {
+      accent: '#000',
+      glow: '#000',
+    },
   },
 }

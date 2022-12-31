@@ -1,13 +1,15 @@
 import { AccountConnect } from '@cardinal/namespaces-components'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
+import type { Cluster } from '@solana/web3.js'
 import { GlyphWallet } from 'assets/GlyphWallet'
 import { LogoTitled } from 'assets/LogoTitled'
 import { useRouter } from 'next/router'
-import { useEnvironmentCtx } from 'providers/EnvironmentProvider'
+import { ETH_NETWORKS, useEnvironmentCtx } from 'providers/EnvironmentProvider'
 import { useEffect, useState } from 'react'
 
 import { ButtonSmall } from './ButtonSmall'
+import { EthWalletConnect } from './EthWalletConnect'
 import { asWallet } from './wallets'
 
 export const HeaderSlim = () => {
@@ -41,11 +43,13 @@ export const HeaderSlim = () => {
           )}
         </div>
         <div className="flex-5 flex items-center justify-end gap-6">
-          {wallet.connected && wallet.publicKey ? (
+          {ETH_NETWORKS.includes(environment.label) ? (
+            <EthWalletConnect />
+          ) : wallet.connected && wallet.publicKey ? (
             <AccountConnect
               dark={true}
               connection={secondaryConnection}
-              environment={environment.label}
+              environment={environment.label as Cluster}
               handleDisconnect={() => wallet.disconnect()}
               wallet={asWallet(wallet)}
             />

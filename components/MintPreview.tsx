@@ -1,5 +1,7 @@
 import { useCandyMachineData } from 'hooks/useCandyMachineData'
+import { useCandyMachineId } from 'hooks/useCandyMachineId'
 import { useConfigLineImages } from 'hooks/useConfigLineImages'
+import { ETH_NETWORKS } from 'providers/EnvironmentProvider'
 import { useProjectConfig } from 'providers/ProjectConfigProvider'
 import { useUTCNow } from 'providers/UTCNowProvider'
 import { useEffect, useState } from 'react'
@@ -7,6 +9,7 @@ import { useEffect, useState } from 'react'
 export const MintPreview = () => {
   const { UTCNow } = useUTCNow()
   const { config } = useProjectConfig()
+  const candyMachineId = useCandyMachineId()
   const configLineImages = useConfigLineImages()
   const mintImages =
     configLineImages.data && configLineImages.data.length > 0
@@ -19,8 +22,11 @@ export const MintPreview = () => {
   const candyMachineData = useCandyMachineData()
 
   useEffect(() => {
-    candyMachineData.data &&
-      configLineImages.isFetched &&
+    if (
+      (candyMachineId.data?.chain &&
+        ETH_NETWORKS.includes(candyMachineId.data?.chain)) ||
+      (candyMachineData.data && configLineImages.isFetched)
+    ) {
       setImageUrl(([_, c]) => {
         let next = c + 1
         if (mintImages && c >= mintImages?.length - 1) next = 0
@@ -31,11 +37,15 @@ export const MintPreview = () => {
           next,
         ]
       })
+    }
   }, [UTCNow])
 
   return (
     <div className="aspect-square w-full">
-      {candyMachineData.data && configLineImages.isFetched ? (
+      {(candyMachineData.data ||
+        (candyMachineId.data?.chain &&
+          ETH_NETWORKS.includes(candyMachineId.data?.chain))) &&
+      configLineImages.isFetched ? (
         <img
           src={
             imageUrl ??

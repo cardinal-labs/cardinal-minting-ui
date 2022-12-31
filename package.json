@@ -23,6 +23,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@alch/alchemy-web3": "^1.4.7",
     "@amplitude/analytics-browser": "^1.5.4",
     "@apollo/client": "^3.7.1",
     "@cardinal/common": "^2.0.1",
@@ -50,6 +51,8 @@
     "@solana/web3.js": "^1.32.1",
     "@tanstack/react-query": "^4.13.0",
     "@tanstack/react-query-devtools": "^4.13.0",
+    "dotenv": "^16.0.3",
+    "ethers": "^5.7.2",
     "formik": "^2.2.9",
     "graphql": "^16.6.0",
     "next": "12.1.4",
@@ -64,6 +67,8 @@
     "react-use-gesture": "^9.1.3",
     "tailwind-merge": "^1.6.1",
     "uuid": "^9.0.0",
+    "web3-eth": "^1.8.1",
+    "web3-utils": "^1.8.1",
     "web3js": "npm:@solana/web3.js@^1.66.2",
     "yup": "^0.32.11"
   },

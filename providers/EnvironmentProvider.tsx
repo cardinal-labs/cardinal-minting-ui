@@ -1,10 +1,16 @@
+import { createAlchemyWeb3 } from '@alch/alchemy-web3'
 import type { Cluster } from '@solana/web3.js'
 import { Connection } from '@solana/web3.js'
 import { useRouter } from 'next/router'
 import React, { useContext, useMemo, useState } from 'react'
+import type { AbiItem } from 'web3-utils'
+
+import contractABI from '../assets/CandyMachine.json'
+
+export const ETH_NETWORKS = ['eth-mainnet', 'eth-goerli']
 
 export interface Environment {
-  label: Cluster
+  label: Cluster | 'eth-mainnet' | 'eth-goerli'
   primary: string
   primaryBeta?: string
   secondary?: string
@@ -17,6 +23,7 @@ export interface EnvironmentContextValues {
   setEnvironment: (newEnvironment: Environment) => void
   connection: Connection
   secondaryConnection: Connection
+  ethConnection: string
 }
 
 const INDEX_ENABLED = true
@@ -42,6 +49,14 @@ export const ENVIRONMENTS: Environment[] = [
   {
     label: 'devnet',
     primary: 'https://api.devnet.solana.com',
+  },
+  {
+    label: 'eth-mainnet',
+    primary: process.env.NEXT_PUBLIC_ETH_MAINNET || '',
+  },
+  {
+    label: 'eth-goerli',
+    primary: process.env.NEXT_PUBLIC_ETH_GOERLI || '',
   },
 ]
 
@@ -75,6 +90,9 @@ export function EnvironmentProvider({
   }, [cluster])
 
   const connection = useMemo(() => {
+    if (ETH_NETWORKS.includes(environment.label)) {
+      return new Connection(ENVIRONMENTS[0]!.primary, { commitment: 'recent' })
+    }
     setEnvironment((e) => ({
       ...e,
       primary:
@@ -90,13 +108,23 @@ export function EnvironmentProvider({
     )
   }, [environment.label])
 
-  const secondaryConnection = useMemo(
-    () =>
-      new Connection(environment.secondary ?? environment.primary, {
-        commitment: 'recent',
-      }),
-    [environment.label]
-  )
+  const secondaryConnection = useMemo(() => {
+    if (ETH_NETWORKS.includes(environment.label)) {
+      return new Connection(
+        ENVIRONMENTS[0]!.secondary ?? ENVIRONMENTS[0]!.primary,
+        { commitment: 'recent' }
+      )
+    }
+    return new Connection(environment.secondary ?? environment.primary, {
+      commitment: 'recent',
+    })
+  }, [environment.label])
+
+  // tried using some ETH connection object from web3.js but couldn't
+  // get around some issues with it. Rolling back to string and can examine more
+  const ethConnection = ETH_NETWORKS.includes(environment.label)
+    ? environment.primary
+    : ENVIRONMENTS.find((env) => env.label === 'eth-mainnet')!.primary
 
   return (
     <EnvironmentContext.Provider
@@ -105,6 +133,7 @@ export function EnvironmentProvider({
         setEnvironment,
         connection,
         secondaryConnection,
+        ethConnection,
       }}
     >
       {children}
@@ -118,4 +147,16 @@ export function useEnvironmentCtx(): EnvironmentContextValues {
     throw new Error('Missing connection context')
   }
   return context
+}
+
+export const ethCandyMachine = (
+  connection: string,
+  contractAddress: string
+) => {
+  const web3 = createAlchemyWeb3(connection)
+  const contract = new web3.eth.Contract(
+    contractABI.abi as AbiItem[],
+    contractAddress
+  )
+  return contract
 }
