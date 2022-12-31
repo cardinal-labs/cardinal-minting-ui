@@ -306,10 +306,10 @@ export const projectConfigs: { [key: string]: ProjectConfig } = {
   ['degods']: {
     name: 'ETH Degods',
     eth: {
-      contractAddress: '0x0A8111CdD30F1E363337F06222037B94f327da18',
+      contractAddress: '0x10cc2d9840005AD44F3Cf96B33154FbFeF51b980',
       goerli: true,
     },
-    displayName: 'Degods brought to you by Giannis on ETH',
+    displayName: 'ETH Degods brought to you by Giannis',
     description: 'beep boop boopity boop',
     websiteUrl: 'https://cardinal.so',
     socialLinks: [

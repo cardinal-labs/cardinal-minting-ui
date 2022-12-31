@@ -56,9 +56,9 @@ export const useHandleMint = () => {
     ['useHandleMint'],
     async (): Promise<string> => {
       if (!candyMachineId) throw 'No candy machine id found'
-      if (!wallet.publicKey) throw 'Wallet not connected'
 
       if (ETH_NETWORKS.includes(candyMachineId?.chain)) {
+        if (!ethWalletId) throw 'Wallet not connected'
         const contract = ethCandyMachine(ethConnection, candyMachineId.address)
         const transactionParameters = {
           to: candyMachineId.address,
@@ -73,6 +73,7 @@ export const useHandleMint = () => {
         })
         return txHash.toString()
       } else {
+        if (!wallet.publicKey) throw 'Wallet not connected'
         const nftToMintKeypair = Keypair.generate()
         const payerId = wallet.publicKey
         const tokenAccountToReceive = await findAta(
